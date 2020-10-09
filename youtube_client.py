@@ -17,6 +17,19 @@ class Song(object):
         self.track = track
 
 
+def get_song_info_from_video(video_id):
+    youtube_url = f'https://www.youtube.com/watch?v={video_id}'
+
+    video = youtube_dl.YoutubeDL({'quiet': True}).extract_info(
+        youtube_url, download=False
+    )
+
+    artist = video['artist']
+    track = video['track']
+
+    return artist, track
+
+
 class YouTubeClient(object):
     # grants access to users YouTube account
     def __init__(self, credentials_location):
@@ -39,7 +52,6 @@ class YouTubeClient(object):
 
         self.youtube_client = youtube_client
 
-
     # Gets a list of the users playlist
     def get_playlist(self):
         request = self.youtube_client.playlists().list(
@@ -53,8 +65,7 @@ class YouTubeClient(object):
 
         return playlist
 
-
-# gets a list of the videos inside of the selected playlist
+    # gets a list of the videos inside of the selected playlist
     def get_videos_from_playlist(self, playlist_id):
         songs = []
         request = self.youtube_client.playlistItems().list(
@@ -66,20 +77,8 @@ class YouTubeClient(object):
         # pulls information from video as Youtube API doesn't provide artist and song information directly
         for item in response['items']:
             video_id = item['snippet']['resourceId']['videoId']
-            artist, track = self.get_song_info_from_video(video_id)
+            artist, track = get_song_info_from_video(video_id)
             if artist and track:
                 songs.append(Song(artist, track))
 
         return songs
-
-    def get_song_info_from_video(self, video_id):
-        youtube_url = f'https://www.youtube.com/watch?v={video_id}'
-
-        video = youtube_dl.YoutubeDL({'quiet': True}).extract_info(
-            youtube_url, download=False
-        )
-
-        artist = video['artist']
-        track = video['track']
-
-        return artist, track

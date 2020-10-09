@@ -28,7 +28,7 @@ def run():
     print(f"You've selected: {chosen_playlist.title}")
 
     # 3. For each video in playlist get the song information
-    songs = youtube_client.get_song_info_from_video(chosen_playlist.id)
+    songs = youtube_client.get_videos_from_playlist(chosen_playlist.id)
     print(f"Attempting to add {len(songs)}")
 
     # Search for songs on spotify
