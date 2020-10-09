@@ -21,15 +21,15 @@ def run():
     playlists = youtube_client.get_playlist()
 
     # 2. Ask which playlist they want to get songs from
-    for index, playlist  in enumerate(playlists):
+    for index, playlist in enumerate(playlists):
         print(f'{index}: {playlist.title}')
     choice = validate("Which Playlist: ")
     chosen_playlist = playlists[choice]
     print(f"You've selected: {chosen_playlist.title}")
 
-    #3. For each video in playlist get the song information
+    # 3. For each video in playlist get the song information
     songs = youtube_client.get_song_info_from_video(chosen_playlist.id)
-    print(f"Attempting to add {len[songs]}")
+    print(f"Attempting to add {len(songs)}")
 
     # Search for songs on spotify
     for song in songs:
@@ -38,6 +38,7 @@ def run():
             added_song = spotify_client.add_song_to_spotify(spotify_song_id)
             if added_song:
                 print(f"Added {song.artist}")
+
 
 if __name__ == '__main__':
     run()
