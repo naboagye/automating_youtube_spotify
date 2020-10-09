@@ -40,47 +40,46 @@ class YouTubeClient(object):
         self.youtube_client = youtube_client
 
 
-# Gets a list of the users playlist
-def get_playlist(self):
-    request = self.youtube_client.playlists().list(
-        part="id,snippet",
-        maxResults=50,
-        mine=True
-    )
-    response = request.execute()
+    # Gets a list of the users playlist
+    def get_playlist(self):
+        request = self.youtube_client.playlists().list(
+            part="id,snippet",
+            maxResults=50,
+            mine=True
+        )
+        response = request.execute()
 
-    playlist = [Playlist(item['id'], item['snippet']['title']) for item in response['items']]
+        playlist = [Playlist(item['id'], item['snippet']['title']) for item in response['items']]
 
-    return playlist
+        return playlist
 
 
 # gets a list of the videos inside of the selected playlist
-def get_videos_from_playlist(self, playlist_id):
-    songs = []
-    request = self.youtube_client.playlistItems().list(
-        playlist_Id=playlist_id,
-        part="id,snippet"
-    )
-    response = request.execute()
+    def get_videos_from_playlist(self, playlist_id):
+        songs = []
+        request = self.youtube_client.playlistItems().list(
+            playlist_Id=playlist_id,
+            part="id,snippet"
+        )
+        response = request.execute()
 
-    # pulls information from video as Youtube API doesn't provide artist and song information directly
-    for item in response['items']:
-        video_id = item['snippet']['resourceId']['videoId']
-        artist, track = self.get_song_info_from_video(video_id)
-        if artist and track:
-            songs.append(Song(artist, track))
+        # pulls information from video as Youtube API doesn't provide artist and song information directly
+        for item in response['items']:
+            video_id = item['snippet']['resourceId']['videoId']
+            artist, track = self.get_song_info_from_video(video_id)
+            if artist and track:
+                songs.append(Song(artist, track))
 
-    return songs
+        return songs
 
+    def get_song_info_from_video(self, video_id):
+        youtube_url = f'https://www.youtube.com/watch?v={video_id}'
 
-def get_song_info_from_video(self, video_id):
-    youtube_url = f'https://www.youtube.com/watch?v={video_id}'
+        video = youtube_dl.YoutubeDL({'quiet': True}).extract_info(
+            youtube_url, download=False
+        )
 
-    video = youtube_dl.YoutubeDL({'quiet': True}).extract_info(
-        youtube_url, download=False
-    )
+        artist = video['artist']
+        track = video['track']
 
-    artist = video['artist']
-    track = video['track']
-
-    return artist, track
+        return artist, track
