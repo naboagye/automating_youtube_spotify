@@ -1,7 +1,7 @@
 import os
 
-import google_auth_oauthlib.flow
-import googleapiclient.discovery
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
 import youtube_dl
 
 
@@ -44,10 +44,10 @@ class YouTubeClient(object):
         api_version = "v3"
 
         # Get credentials and create an API client
-        flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
+        flow = InstalledAppFlow.from_client_secrets_file(
             credentials_location, scopes)
         credentials = flow.run_console()
-        youtube_client = googleapiclient.discovery.build(
+        youtube_client = build(
             api_service_name, api_version, credentials=credentials)
 
         self.youtube_client = youtube_client
